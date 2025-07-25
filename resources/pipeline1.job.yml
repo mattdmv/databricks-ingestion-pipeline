@@ -8,6 +8,7 @@ resources:
         # Run this job every day, exactly one day from the last run; see https://docs.databricks.com/api/workspace/jobs/create#trigger
         file_arrival:
           url: s3://databricks-delta-lake-s3-integration-test/landing/
+        pause_status: UNPAUSED
 
       #email_notifications:
       #  on_failure:
