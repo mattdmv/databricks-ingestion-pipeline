@@ -1,7 +1,7 @@
 import dlt
 
-from common.ingestion_flow import bronze_ingestion_flow
-from utils.functions import load_json_schema
+from src.common.ingestion_flow import bronze_ingestion_flow
+from src.utils.functions import load_json_schema
 
 
 landing_path = spark.conf.get("landing_path")
