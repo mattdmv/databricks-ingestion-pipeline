@@ -1,14 +1,15 @@
 # The main pipeline for ingestion_pipelines
 resources:
   pipelines:
-    ingestion_pipelines_pipeline:
-      name: ingestion_pipelines_pipeline
+    pipeline_1:
+      name: pipeline_1
       catalog: workspace
-      schema: ingestion_pipelines_${bundle.target}
+      schema: ingestion_${bundle.target}
       serverless: true
       libraries:
         - notebook:
-            path: ../src/dlt_pipeline.ipynb
+            path: ../src/ingestion_pipelines/dlt_ingestion_main.ipynb
 
       configuration:
+        landing_path: s3://databricks-delta-lake-s3-integration-test/landing/
         bundle.sourcePath: ${workspace.file_path}/src

@@ -3,6 +3,10 @@ name = "ingestion_pipelines"
 version = "0.0.1"
 authors = [{ name = "yeerahdi.ai@gmail.com" }]
 requires-python = ">= 3.11"
+dependencies = [
+    "ipykernel>=6.30.0",
+    "pyspark==3.5.1",
+]
 
 [project.optional-dependencies]
 dev = [
