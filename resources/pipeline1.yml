@@ -7,8 +7,8 @@ resources:
       schema: ingestion_${bundle.target}
       serverless: true
       libraries:
-        - notebook:
-            path: ../src/ingestion_pipelines/dlt_ingestion_main.ipynb
+        - file:
+            path: ../src/ingestion_pipelines/dlt_ingestion_main.py
 
       configuration:
         landing_path: s3://databricks-delta-lake-s3-integration-test/landing/
