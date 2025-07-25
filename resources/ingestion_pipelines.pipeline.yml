@@ -1,0 +1,14 @@
+# The main pipeline for ingestion_pipelines
+resources:
+  pipelines:
+    ingestion_pipelines_pipeline:
+      name: ingestion_pipelines_pipeline
+      catalog: workspace
+      schema: ingestion_pipelines_${bundle.target}
+      serverless: true
+      libraries:
+        - notebook:
+            path: ../src/dlt_pipeline.ipynb
+
+      configuration:
+        bundle.sourcePath: ${workspace.file_path}/src
