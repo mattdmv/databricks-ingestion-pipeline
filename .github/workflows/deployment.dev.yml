@@ -39,11 +39,19 @@ jobs:
       # in the bundle's settings file.
       - run: databricks bundle validate
         working-directory: .
+        env:          
+          # below as described here: https://learn.microsoft.com/en-us/azure/databricks/dev-tools/auth/oauth-m2m
+          # below we use params for machine to machine auth based on account ID and token 
+          # you can also use service principal - better than user auth for prod
+          DATABRICKS_CLIENT_ID: ${{ vars.DATABRICKS_USERNAME_CLIENT_ID }}
+          DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_USERNAME_SECRET }}
 
   deploy:
     name: "Deploy bundle"
     runs-on: ubuntu-latest
     environment: dev
+    needs:
+    - validate
 
     steps:
       # Check out this repo, so that this workflow can access it.
