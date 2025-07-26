@@ -1,6 +1,6 @@
 # This workflow validates, deploys, and runs the specified bundle
 # within a pre-production target named "dev".
-name: "Development deployment"
+name: "Deployment - dev"
 
 # Ensure that only a single job or workflow using the same concurrency group
 # runs at a time.
@@ -20,6 +20,26 @@ jobs:
   # Used by the "pipeline_update" job to deploy the bundle.
   # Bundle validation is automatically performed as part of this deployment.
   # If validation fails, this workflow fails.
+  validate:
+    name: "Validate bundle"
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      # Check out this repo, so that this workflow can access it.
+      - uses: actions/checkout@v3
+
+      # Download the Databricks CLI.
+      # See https://github.com/databricks/setup-cli
+      - uses: databricks/setup-cli@main
+
+      - run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      # Deploy the bundle to the "qa" target as defined
+      # in the bundle's settings file.
+      - run: databricks bundle validate
+        working-directory: .
+
   deploy:
     name: "Deploy bundle"
     runs-on: ubuntu-latest
