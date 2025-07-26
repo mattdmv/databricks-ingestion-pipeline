@@ -1,0 +1,96 @@
+# This workflow validates, deploys, and runs the specified bundle
+# within a pre-production target named "dev".
+name: "Deployment - prod"
+
+# Ensure that only a single job or workflow using the same concurrency group
+# runs at a time.
+concurrency: 1
+
+# Trigger this workflow whenever a pull request is opened against the repo's
+# main branch or an existing pull request's head branch is updated.
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Used by the "pipeline_update" job to deploy the bundle.
+  # Bundle validation is automatically performed as part of this deployment.
+  # If validation fails, this workflow fails.
+  validate:
+    name: "Validate bundle"
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      # Check out this repo, so that this workflow can access it.
+      - uses: actions/checkout@v3
+
+      # Download the Databricks CLI.
+      # See https://github.com/databricks/setup-cli
+      - uses: databricks/setup-cli@main
+
+      - run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      # Deploy the bundle to the "qa" target as defined
+      # in the bundle's settings file.
+      - run: databricks bundle validate -t prod
+        working-directory: .
+        env:          
+          # below as described here: https://learn.microsoft.com/en-us/azure/databricks/dev-tools/auth/oauth-m2m
+          # below we use params for machine to machine auth based on account ID and token 
+          # you can also use service principal - better than user auth for prod
+          DATABRICKS_CLIENT_ID: ${{ vars.DATABRICKS_USERNAME_CLIENT_ID }}
+          DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_USERNAME_SECRET }}
+
+  deploy:
+    name: "Deploy bundle"
+    runs-on: ubuntu-latest
+    environment: prod
+    needs:
+    - validate
+
+    steps:
+      # Check out this repo, so that this workflow can access it.
+      - uses: actions/checkout@v3
+
+      # Download the Databricks CLI.
+      # See https://github.com/databricks/setup-cli
+      - uses: databricks/setup-cli@main
+
+      - run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - run: databricks bundle deploy -t prod
+        working-directory: .
+        env:          
+          # below as described here: https://learn.microsoft.com/en-us/azure/databricks/dev-tools/auth/oauth-m2m
+          # below we use params for machine to machine auth based on account ID and token 
+          # you can also use service principal - better than user auth for prod
+          DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+          DATABRICKS_CLIENT_ID: ${{ vars.DATABRICKS_USERNAME_CLIENT_ID }}
+          DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_USERNAME_SECRET }}
+
+  run-pipeline:
+    name: "Run pipeline"
+    runs-on: ubuntu-latest
+    environment: prod
+    needs:
+      - deploy
+
+    steps:
+      # Check out this repo, so that this workflow can access it.
+      - uses: actions/checkout@v3
+
+      # Use the downloaded Databricks CLI.
+      - uses: databricks/setup-cli@main
+
+      # Run the Databricks workflow named "my-job" as defined in the
+      # bundle that was just deployed.
+      - run: databricks bundle run -t prod pipeline_1_trigger_job
+        working-directory: .
+        env:
+          DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+          DATABRICKS_CLIENT_ID: ${{ vars.DATABRICKS_USERNAME_CLIENT_ID }}
+          DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_USERNAME_SECRET }}
+
+  
