@@ -78,6 +78,7 @@ jobs:
   run-pipeline:
     name: "Run pipeline"
     runs-on: ubuntu-latest
+    environment: dev
     needs:
       - deploy
 
