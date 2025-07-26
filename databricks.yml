@@ -29,7 +29,7 @@ targets:
     workspace:
       host: https://dbc-e9293f0e-9689.cloud.databricks.com
       # We explicitly deploy to /Workspace/Users/yeerahdi.ai@gmail.com to make sure we only have a single copy.
-      root_path: /Workspace/Users/yeerahdi.ai@gmail.com/.bundle/${bundle.name}/${bundle.target}
+      root_path: /Workspace/Users/${{ vars.DATABRICKS_USERNAME_CLIENT_ID }}/.bundle/${bundle.name}/${bundle.target}
     permissions:
       - service_principal_name: ${{ vars.DATABRICKS_USERNAME_CLIENT_ID }}
         level: CAN_MANAGE
