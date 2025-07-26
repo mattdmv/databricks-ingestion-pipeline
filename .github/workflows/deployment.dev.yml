@@ -41,6 +41,6 @@ jobs:
           # below as described here: https://learn.microsoft.com/en-us/azure/databricks/dev-tools/auth/oauth-m2m
           # below we use params for machine to machine auth based on account ID and token 
           # you can also use service principal - better than user auth for prod
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_USERNAME_CLIENT_ID }}
+          DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+          DATABRICKS_CLIENT_ID: ${{ vars.DATABRICKS_USERNAME_CLIENT_ID }}
           DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_USERNAME_SECRET }}
